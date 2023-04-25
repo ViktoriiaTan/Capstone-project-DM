@@ -14,8 +14,9 @@ query <- "sepsis AND heparin AND 2020/11[pdat]"
 query <- gsub(" ", "+", query)
 
 #Search for articles ids
-ncbi_ids <- function(db, query, retmax= 20){
+pubmed_ids <- function(db = "pubmed", query, retmax= 20){
   url <- glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db={db}&term={query}&usehistory=y&retmax={retmax}&api_key={api_key}")
+  print(url)
   response <- httr::GET(url)
   doc <- read_xml(response)
   ids <- xml_find_all(doc, ".//Id") %>% 
@@ -23,11 +24,11 @@ ncbi_ids <- function(db, query, retmax= 20){
   
   return(ids)
 }
-ncbi_ids <- ids_search(db, query)
+art_ids <- ncbi_ids(db, "sepsis", 4)
 
 #
-ncbi_abstract <- function(db = NULL , ids = NULL, 
-                         retmode = "uilist", rettype = "xml") {
+pubmed_abstract <- function(db , ids = NULL, 
+                         retmode = "abstract", rettype = "text") {
   ids_str <- paste(ids, collapse = ",")
   url <- glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db={db}&id={ids_str}&retmode={retmode}&rettype={rettype}&api_key={api_key}")
   print(url)
@@ -38,9 +39,9 @@ ncbi_abstract <- function(db = NULL , ids = NULL,
   
   return(abstracts)
 }
-abstracts <- ncbi_abstract(db, 33520534)
+abstracts <- ncbi_abstract(db, art_ids)
 
-art_linkout <- function(db, ids) {
+pubmed_linkout <- function(db, ids) {
   url <- glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom={db}&id={ids}&cmd=lcheck&api_key={api_key}")
   response <- httr::GET(url)
   summary_link <- read_xml(content(response, "text"))
@@ -61,4 +62,6 @@ art_linkout <- function(db, ids) {
   }
 }
 
-art_linkout(db, 2011359)
+pubmed_linkout(db, 2011359)
+
+

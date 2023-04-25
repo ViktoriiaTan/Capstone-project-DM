@@ -6,6 +6,7 @@ pubmed_content <- function(db , ids = NULL,
   response <- httr::GET(url)
   
   summary <- read_xml(content(response, "text"))
+  
   #Get authors
   authors <- xml_find_all(summary, "//Author") %>%
     lapply(function(x) {
@@ -14,9 +15,15 @@ pubmed_content <- function(db , ids = NULL,
       paste(last_name, initials, sep = " ")
     }) %>%
     paste(collapse = ", ")
+  
+  #Get title
+  article_title <- xml_find_all(summary, "//ArticleTitle") %>% 
+    xml_text(trim = TRUE)
+  
+  
 
   
-  return(authors)
+  return(article_title)
 }
-pubmed_content(db, 20113659)
+pubmed_content(db, 37096423)
 

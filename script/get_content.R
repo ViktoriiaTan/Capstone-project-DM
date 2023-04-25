@@ -4,7 +4,7 @@ pubmed_content <- function(db , ids = NULL,
   ids_str <- paste(ids, collapse = ",")
   url <- glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db={db}&id={ids_str}&retmode={retmode}&rettype={rettype}&api_key={api_key}")
   response <- httr::GET(url)
-  
+  print(url)
   summary <- read_xml(content(response, "text"))
   
   #Get authors
@@ -20,10 +20,15 @@ pubmed_content <- function(db , ids = NULL,
   article_title <- xml_find_all(summary, "//ArticleTitle") %>% 
     xml_text(trim = TRUE)
   
+  #Retrieve abstracts
+  abstract_objective <- foreach(node = xml_find_all(summary, "//AbstractText")) %do% {
+    label <- xml_attr(node, "Label")
+    text <- xml_text(node, trim = TRUE)
+    paste0(label, ": ", text)
+  } %>% 
+    paste(collapse = "\n")
   
-
-  
-  return(article_title)
+  return(abstract_objective)
 }
 pubmed_content(db, 37096423)
 

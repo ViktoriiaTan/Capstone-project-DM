@@ -10,3 +10,6 @@ pubmed_content <- function(db , ids = NULL,
 }
 summary <- pubmed_content(db, 37087741)
 
+df <- data_frame("PMID" = art_ids, "Title" = article_title, "Abstract" = abstract_objective, 
+                 "Journal" = journal_title, "Country" = country, "Outlink" = linkout,
+                 "Article received" = pub_received, "Article accepted" = pub_accepted)

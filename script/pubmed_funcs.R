@@ -10,11 +10,12 @@ api_key <- gsub('"', '', api_key)
 
 base_address <- "https://www.ncbi.nlm.nih.gov/entrez/eutils/"
 db <- "pubmed"
-query <- "sepsis+AND+heparin+AND+2020[pdat]"
+query <- "sepsis AND heparin AND 2020/11[pdat]"
+query <- gsub(" ", "+", query)
 
 #Search for articles ids
-ids_search <- function(db, query, api_key, retmax= NULL){
-  url <- glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db={db}&term={query}&usehistory=y&retmax={retmax}&api_key={api}")
+ncbi_ids <- function(db, query, retmax= 20){
+  url <- glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db={db}&term={query}&usehistory=y&retmax={retmax}&api_key={api_key}")
   response <- httr::GET(url)
   doc <- read_xml(response)
   ids <- xml_find_all(doc, ".//Id") %>% 
@@ -22,22 +23,24 @@ ids_search <- function(db, query, api_key, retmax= NULL){
   
   return(ids)
 }
-article_ids <- ids_search(db, query, api_key, 100)
+ncbi_ids <- ids_search(db, query)
 
 #
-get_abstract <- function(db, ids, api_key) {
+ncbi_abstract <- function(db = NULL , ids = NULL, 
+                         retmode = "uilist", rettype = "xml") {
   ids_str <- paste(ids, collapse = ",")
-  url <- glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db={db}&id={ids_str}&retmode=xml&rettype=abstract&api_key={api}")
+  url <- glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db={db}&id={ids_str}&retmode={retmode}&rettype={rettype}&api_key={api_key}")
+  print(url)
   response <- httr::GET(url)
   doc <- read_xml(response)
-  text <- xml_find_all(doc, ".//AbstractText") %>% 
+  abstracts <- xml_find_all(doc, ".//AbstractText") %>% 
     xml_text()
   
   return(abstracts)
 }
-abstracts <- get_abstract(db, article_ids, api_key)
+abstracts <- ncbi_abstract(db, 33520534)
 
-get_linkout <- function(db, ids, api_key) {
+art_linkout <- function(db, ids) {
   url <- glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom={db}&id={ids}&cmd=lcheck&api_key={api_key}")
   response <- httr::GET(url)
   summary_link <- read_xml(content(response, "text"))
@@ -58,4 +61,4 @@ get_linkout <- function(db, ids, api_key) {
   }
 }
 
-get_linkout(db, 2011359, api_key)
+art_linkout(db, 2011359)

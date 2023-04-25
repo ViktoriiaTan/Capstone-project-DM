@@ -62,7 +62,7 @@ pubmed_linkout <- function(db, ids) {
   }
 }
 
-pubmed_linkout(db, 2011359)
+linkout <- pubmed_linkout(db, 2011359)
 
 #Retrieving doi
 doi <- xml_find_all(summary, ".//ArticleId[@IdType='doi']") %>%

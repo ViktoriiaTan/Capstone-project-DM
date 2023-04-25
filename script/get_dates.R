@@ -35,4 +35,4 @@ date_a <- function(sum){
     return("not found")
   }
 }
-pub_accepted<- date_a(summary)
+pub_accepted <- date_a(summary)

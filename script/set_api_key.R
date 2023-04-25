@@ -22,5 +22,17 @@ set_ncbi_apikey <- function(check_env = FALSE) {
   if (identical(key, "")) {
     stop("NCBI API key entry failed", call. = FALSE)
   }
+  
+  # Check if user is registered
+  response <- httr::GET(glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=1&rettype=abstract&api_key={key}"))
+  if (response$status_code == 200) {
+    message("User is registered with NCBI API key")
+    options("ncbi.api.key" = key)
+  } else {
+    stop("NCBI API key is not valid for registered user", call. = FALSE)
+  }
+  invisible()
 }
+
 set_ncbi_apikey()
+

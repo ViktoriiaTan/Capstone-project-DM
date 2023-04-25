@@ -1,20 +1,22 @@
-base_address<-  "https://www.ncbi.nlm.nih.gov/entrez/eutils/"
 
-pubmed_content <- function(ids){
-  sum_endp <- glue("esummary.fcgi?db={db}&id={ids}&api_key={api_key}")
-  url <- glue("{base_address}{sum_endp}")
-  
+pubmed_content <- function(db , ids = NULL, 
+                           retmode = "abstract", rettype = "xml") {
+  ids_str <- paste(ids, collapse = ",")
+  url <- glue("https://www.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db={db}&id={ids_str}&retmode={retmode}&rettype={rettype}&api_key={api_key}")
   response <- httr::GET(url)
+  
   summary <- read_xml(content(response, "text"))
-  
   #Get authors
-  author_elements <- xml_find_all(summary, "//Item[@Name='AuthorList']//Item[@Name='Author']") %>%
-    xml_text()%>%
+  authors <- xml_find_all(summary, "//Author") %>%
+    lapply(function(x) {
+      last_name <- xml_find_all(x, ".//LastName") %>% xml_text(trim = TRUE)
+      initials <- xml_find_all(x, ".//Initials") %>% xml_text(trim = TRUE)
+      paste(last_name, initials, sep = " ")
+    }) %>%
     paste(collapse = ", ")
+
   
-  
-  
-  return(author_elements)
+  return(authors)
 }
-pubmed_content(20113659)
+pubmed_content(db, 20113659)
 

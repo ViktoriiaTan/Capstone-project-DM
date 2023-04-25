@@ -28,7 +28,11 @@ pubmed_content <- function(db , ids = NULL,
   } %>% 
     paste(collapse = "\n")
   
-  return(abstract_objective)
+  #Get journal title 
+  journal_title <- xml_find_first(summary, ".//Journal/Title") %>% 
+    xml_text()
+  
+  return(journal_title )
 }
 pubmed_content(db, 37096423)
 

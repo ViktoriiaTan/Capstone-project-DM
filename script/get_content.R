@@ -32,7 +32,17 @@ pubmed_content <- function(db , ids = NULL,
   journal_title <- xml_find_first(summary, ".//Journal/Title") %>% 
     xml_text()
   
-  return(journal_title )
+  #Getting Date Revised
+  revised_date <- xml_find_first(summary, ".//DateRevised")
+  year <- xml_find_first(revised_date, ".//Year") %>% xml_text()
+  month <- xml_find_first(revised_date, ".//Month") %>% xml_text()
+  day <- xml_find_first(revised_date, ".//Day") %>% xml_text()
+  
+  revised_date <- as.Date(paste(year, month, day, sep="-"))
+
+  
+  
+  return(revised_date)
 }
 pubmed_content(db, 37096423)
 

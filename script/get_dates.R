@@ -1,21 +1,38 @@
-#Getting Date Revised
-revised_date <- xml_find_first(summary, ".//DateRevised")
-year <- xml_find_first(revised_date, ".//Year") %>% xml_text()
-month <- xml_find_first(revised_date, ".//Month") %>% xml_text()
-day <- xml_find_first(revised_date, ".//Day") %>% xml_text()
+#Getting history dates
 
-revised_date <- as.Date(paste(year, month, day, sep="-"))
-
-
-
-
-accepted_date <- function(){
-  xml_find_all(summary, ".//PubMedPubDate") 
-  if ( !== NA)
-    accepted_date <- paste(xml_text(xml_find_first(accepted_dates, ".//Year")),
-                           xml_text(xml_find_first(accepted_dates, ".//Month")),
-                           xml_text(xml_find_first(accepted_dates, ".//Day")), 
-                           sep = "-")
-  accepted_date <- as.Date(accepted_date, format = "%Y-%m-%d")
+#date when the manuscript was received
+date_r <- function(sum){
+  pub_date <- xml_find_all(sum, ".//PubMedPubDate") 
+  if (length(pub_date) > 0){
+    accepted <- xml_find_all(summary, ".//PubMedPubDate[@PubStatus='received']") %>% 
+      xml_children() %>% 
+      xml_text() %>% 
+      paste(collapse = "-") %>% 
+      as.Date(format = "%Y-%m-%d")
+    
+    return(accepted)
+  }
+  else {
+    return("not found")
+  }
 }
+pub_received<- date_r(summary)
 
+
+# date when the article was accepted for publication
+date_a <- function(sum){
+  pub_date <- xml_find_all(sum, ".//PubMedPubDate") 
+  if (length(pub_date) > 0){
+    accepted <- xml_find_all(summary, ".//PubMedPubDate[@PubStatus='accepted']") %>% 
+      xml_children() %>% 
+      xml_text() %>% 
+      paste(collapse = "-") %>% 
+      as.Date(format = "%Y-%m-%d")
+    
+    return(accepted)
+  }
+  else {
+    return("not found")
+  }
+}
+pub_accepted<- date_a(summary)

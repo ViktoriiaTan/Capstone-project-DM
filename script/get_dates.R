@@ -1,15 +1,14 @@
-
-build_date <- function(date_node)
-{
+# Define a function to build a date string
+build_date <- function(date_node) {
   year <- xml_text(xml_find_first(date_node, ".//Year"))
   month <- xml_text(xml_find_first(date_node, ".//Month"))
   day <- xml_text(xml_find_first(date_node, ".//Day"))
   return (glue("{year}-{month}-{day}"))
 }
-#date when the manuscript was received
-date_r <- function(summary) {
+# Get dates when manuscripts were received
+date_r <- function(art) {
 
-  articles <- xml_find_all(summary, "//PubmedArticle")
+  articles <- xml_find_all(art, "//PubmedArticle")
   
   res_dates <- c()
   
@@ -29,16 +28,13 @@ date_r <- function(summary) {
       res_dates <- c(res_dates, build_date(pub_date))
     }
   }
-  
   return(res_dates)
 }
-pub_received <- date_r(summary)
+pub_received <- date_r(articles)
 
-#Accept
-
-date_acc <- function(summary) {
-  
-  articles <- xml_find_all(summary, "//PubmedArticle")
+# Get dates when manuscripts were accepted
+date_acc <- function(art) {
+  articles <- xml_find_all(art, "//PubmedArticle")
   
   accept_dates <- c()
   
@@ -58,8 +54,6 @@ date_acc <- function(summary) {
       accept_dates <- c(accept_dates, build_date(pub_date))
     }
   }
-  
   return(accept_dates)
 }
-pub_accepted <- date_acc(summary)
-
+pub_accepted <- date_acc(articles)

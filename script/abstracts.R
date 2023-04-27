@@ -1,8 +1,5 @@
 #Retrieve abstracts
 
-abstracts <- xml_find_all(articles, "//Article/Abstract") %>%
-  xml_text()
-
 abstract_function <- function(art){
   
   values <- c()
@@ -23,4 +20,3 @@ abstract_function <- function(art){
   return(values)
 }
 
-abstract <- abstract_function(articles)

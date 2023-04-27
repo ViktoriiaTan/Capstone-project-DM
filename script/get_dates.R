@@ -19,7 +19,7 @@ date_r <- function(art) {
     pub_dates <- xml_find_all(article, ".//PubMedPubDate[@PubStatus='received']") 
     
     if (length(pub_dates) == 0){
-      res_dates <- c(res_dates, glue("Not found for PMID {pm_id}"))
+      res_dates <- c(res_dates, glue("N/A"))
       next
     }
     
@@ -30,7 +30,7 @@ date_r <- function(art) {
   }
   return(res_dates)
 }
-pub_received <- date_r(articles)
+
 
 # Get dates when manuscripts were accepted
 date_acc <- function(art) {
@@ -45,7 +45,7 @@ date_acc <- function(art) {
     pub_dates <- xml_find_all(article, ".//PubMedPubDate[@PubStatus='accepted']") 
     
     if (length(pub_dates) == 0){
-      accept_dates <- c(accept_dates, glue("Not found for PMID {pm_id}"))
+      accept_dates <- c(accept_dates, glue("N/A"))
       next
     }
     
@@ -56,4 +56,4 @@ date_acc <- function(art) {
   }
   return(accept_dates)
 }
-pub_accepted <- date_acc(articles)
+

@@ -22,7 +22,7 @@ title <- function(art){
   
   return(titles)
 }
-article_title <- title(articles)
+
 
 
 #Get journal title in which an article was published
@@ -49,4 +49,4 @@ journal_t <- function(art){
   
   return(j_titles)
 }
-journal_title <- journal_t(articles)
+

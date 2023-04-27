@@ -1,11 +1,3 @@
-#Get authors
-authors <- xml_find_all(articles, "//Author") %>%
-  lapply(function(x) {
-    last_name <- xml_find_all(x, ".//LastName") %>% xml_text(trim = TRUE)
-    initials <- xml_find_all(x, ".//Initials") %>% xml_text(trim = TRUE)
-    paste(last_name, initials, sep = " ")
-  }) %>%
-  paste(collapse = ", ")
 
 # Function to get authors from xml
 get_authors <- function(articles){
@@ -18,7 +10,7 @@ get_authors <- function(articles){
     paste(collapse = ", ")
   return(authors)
 }
-authors <- get_authors(articles)
+
 
 #Get country where the journal is published
 get_country <- function(articles){
@@ -26,9 +18,7 @@ get_country <- function(articles){
     xml_text()
   return(country)
 }
-country <- get_country(articles)
-country <- xml_find_all(articles, ".//MedlineJournalInfo/Country") %>% 
-  xml_text()
+
 
 # Retrieve the DOI for a given PubMed article
 doi_results <- function(art){
@@ -42,4 +32,3 @@ doi_results <- function(art){
     }
   })
 }
-doi <- doi_results(articles)

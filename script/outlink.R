@@ -28,5 +28,3 @@ pubmed_linkout <- function(db, ids) {
   
   return(values)
 }
-
-linkout <- pubmed_linkout(db, art_ids)

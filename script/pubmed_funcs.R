@@ -15,8 +15,9 @@ db <- "pubmed"
 query <- "sepsis AND 2020[pdat]"
 query <- gsub(" ", "+", query)
 
+
 # Function to search for PubMed article IDs
-pubmed_ids <- function(db = "pubmed", query, retmax= 100){
+pubmed_ids <- function(db = "pubmed", query, retmax= 250){
   search_url <- glue("esearch.fcgi?db={db}&term={query}&usehistory=y&retmax={retmax}&api_key={api_key}")
   ids <- glue("{base_address}{search_url}") %>% 
     httr::GET() %>% 
@@ -28,7 +29,7 @@ pubmed_ids <- function(db = "pubmed", query, retmax= 100){
   return(ids)
 }
 
-pubmed_content <- function(db , ids = NULL, 
+pubmed_content <- function(db= "pubmed", ids = NULL, 
                            retmode = "abstract", rettype = "xml") {
   
   ids_str <- paste(ids, collapse = ",")
@@ -41,26 +42,26 @@ pubmed_content <- function(db , ids = NULL,
   return(sum)
 }
 art_ids <- pubmed_ids( query = query)
-summary <- pubmed_content(db, art_ids)
+articles <- pubmed_content(ids = art_ids)
  
 #Retrieving OutLink
 pubmed_linkout <- function(db, ids) {
   values <- c()
   
-  for (id in ids) {
-    ids_str <- paste(id, collapse = ",")
-    link_pr <- glue("elink.fcgi?dbfrom={db}&id={id}&cmd=prlinks&api_key={api_key}")
-    link <- glue("{base_address}{link_pr}")
-    
-    response <- GET(link)
-    xml <- read_xml(content(response, "text"))
-    
-    link_set_element <- xml_find_first(xml, ".//LinkSet")
-    
-    url_element <- xml_find_first(link_set_element, ".//Url[not(../Provider/NameAbbr='PMC')]")
+  ids_str <- paste(ids, collapse = ",")
+  link_pr <- glue("elink.fcgi?dbfrom={db}&id={ids_str}&cmd=prlinks&api_key={api_key}")
+  link <- glue("{base_address}{link_pr}")
+  
+  response <- GET(link)
+  xml <- read_xml(content(response, "text"))
+  
+  id_url_sets <- xml_find_all(xml, ".//IdUrlSet")
+  
+  for (id_url_set in id_url_sets) {
+    url_element <- xml_find_first(id_url_set, ".//Url[not(../Provider/NameAbbr='PMC')]")
     
     if (is.null(url_element)) {
-      url_element <- xml_find_first(link_set_element, ".//Url")
+      url_element <- xml_find_first(id_url_set, ".//Url")
     }
     
     if (!is.null(url_element)) {
@@ -69,23 +70,25 @@ pubmed_linkout <- function(db, ids) {
       values <- c(values, NA)
     }
   }
+  
   return(values)
 }
 
 linkout <- pubmed_linkout(db, art_ids)
 
 # Retrieve the DOI for a given PubMed article
-doi_results <- function(sum){
-  pubmed_articles <- xml_find_all(sum, ".//PubmedArticle")
+
+doi_results <- function(art){
+  pubmed_articles <- xml_find_all(art, ".//PubmedArticle")
   lapply(pubmed_articles, function(article) {
-  doi <- xml_find_first(article, ".//PubmedData/ArticleIdList/ArticleId[@IdType='doi']")
-  if (is.null(doi)) {
-    return()
-  } else {
-    return(xml_text(doi))
-  }
-})
+    doi <- xml_find_first(article, ".//PubmedData/ArticleIdList/ArticleId[@IdType='doi']")
+    if (is.null(doi)) {
+      return()
+    } else {
+      return(xml_text(doi))
+    }
+  })
 }
-doi <- doi_results(summary)
+doi <- doi_results(articles)
 
 

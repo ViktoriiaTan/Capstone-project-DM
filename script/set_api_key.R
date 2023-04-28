@@ -1,4 +1,3 @@
-library(glue)
 
 set_ncbi_apikey <- function(check_env = FALSE) {
   if (check_env) {
@@ -24,15 +23,16 @@ set_ncbi_apikey <- function(check_env = FALSE) {
   }
   
   # Check if user is registered
-  response <- httr::GET(glue("{base_address}efetch.fcgi?db=pubmed&id=1&rettype=abstract&api_key={key}"))
+  response <- httr::GET(paste0("https://www.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=1&rettype=abstract&api_key=", key))
+  print(response)
   if (response$status_code == 200) {
     message("User is registered with NCBI API key")
     options("ncbi.api.key" = key)
   } else {
     stop("NCBI API key is not valid for registered user", call. = FALSE)
   }
-  invisible()
+  invisible(key)
 }
 
-set_ncbi_apikey()
+api_key <- set_ncbi_apikey()
 

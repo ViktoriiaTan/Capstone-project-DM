@@ -10,7 +10,7 @@ abstract_function <- function(art){
     article <- articles[[i]]
     abstract_element <- xml_find_first(article, "Abstract")
     
-    if (is.null(abstract_element)){
+    if (is.na(abstract_element)){
       values <- c(values, "No abstract")
       next
     }

@@ -29,15 +29,25 @@ pubmed_ids <- function(db = "pubmed", query, retmax= 20){
   return(ids)
 }
 
-pubmed_content <- function(db= "pubmed", ids = NULL, 
+
+pubmed_content <- function(db = "pubmed", ids = NULL, 
                            retmode = "abstract", rettype = "xml") {
   
-  ids_str <- paste(ids, collapse = ",")
-  fetch_url <- glue("efetch.fcgi?db={db}&id={ids_str}&retmode={retmode}&rettype={rettype}&api_key={api_key}")
+  fetch_url <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+  params <- list(
+    db = db,
+    id = paste(ids, collapse= ","),
+    retmode = retmode,
+    rettype = rettype,
+    api_key = api_key
+  )
   
-  sum <- glue("{base_address}{fetch_url}") %>% 
-    httr::GET() %>% 
-    content("text") %>% 
-    read_xml()
+  res <- httr::POST(url = fetch_url, body = params, encode = "form")
+  sum <- content(res, "text") %>% read_xml()
+  
   return(sum)
 }
+
+
+
+

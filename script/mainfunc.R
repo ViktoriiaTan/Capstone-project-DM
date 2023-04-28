@@ -38,4 +38,4 @@ get_content <- function(db = "pubmed", query, retmax = 20) {
   
   return(df)
 }
-b<- get_content(db,query, 250)
+b<- get_content(db,query, 2500)

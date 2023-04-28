@@ -25,7 +25,7 @@ doi_results <- function(art){
   pubmed_articles <- xml_find_all(art, ".//PubmedArticle")
   lapply(pubmed_articles, function(article) {
     doi <- xml_find_first(article, ".//PubmedData/ArticleIdList/ArticleId[@IdType='doi']")
-    if (is.null(doi)) {
+    if (is.na(doi)) {
       return()
     } else {
       return(xml_text(doi))

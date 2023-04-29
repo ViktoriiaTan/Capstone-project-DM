@@ -1,30 +1,37 @@
-
 #Retrieving OutLink
-pubmed_linkout <- function(db, ids) {
-  values <- c()
+fetch_pubmed_outlinks <- function(db, ids) {
   
   ids_str <- paste(ids, collapse = ",")
-  link_pr <- glue("elink.fcgi?dbfrom={db}&id={ids_str}&cmd=prlinks&api_key={api_key}")
-  link <- glue("{base_address}{link_pr}")
+  link <- glue("{PUBMED_BASE_ADDRESS}elink.fcgi?dbfrom={db}&id={ids_str}&cmd=prlinks&api_key={api_key}")
   
-  response <- GET(link)
-  xml <- read_xml(content(response, "text"))
+  xml_doc <- GET(link) %>%
+    content("text") %>%
+    read_xml()
+  return(xml_doc)
+}
+
+
+process_pubmed_outlinks <- function(xml_doc) {
   
-  id_url_sets <- xml_find_all(xml, ".//IdUrlSet")
-  
-  for (id_url_set in id_url_sets) {
-    url_element <- xml_find_first(id_url_set, ".//Url[not(../Provider/NameAbbr='PMC')]")
-    
-    if (is.null(url_element)) {
-      url_element <- xml_find_first(id_url_set, ".//Url")
-    }
-    
-    if (!is.null(url_element)) {
-      values <- c(values, xml_text(url_element))
-    } else {
-      values <- c(values, NA)
-    }
+  create_row <- function(id, url) {
+    return(tibble(
+      "PMID" = id,
+      "Outlink" = url
+    ))
   }
   
-  return(values)
+  df <- data.frame()
+  
+  for (id_url_set in xml_find_all(xml_doc, ".//IdUrlSet")) {
+    
+    pmid <- xml_text(xml_find_first(id_url_set, "Id"))
+    url_element <- xml_find_first(id_url_set, ".//Url[not(../Provider/NameAbbr='PMC')]")
+    
+    if (is.na(url_element)) {
+      url_element <- xml_find_first(id_url_set, ".//Url")
+    }
+    url <- get_xml_text_or_default(url_element, "N/A")
+    df <- rbind(df, create_row(pmid, url))
+  }
+  return(df)
 }

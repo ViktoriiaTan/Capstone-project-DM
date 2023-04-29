@@ -5,55 +5,25 @@ build_date <- function(date_node) {
   day <- xml_text(xml_find_first(date_node, ".//Day"))
   return (glue("{year}-{month}-{day}"))
 }
+
 # Get dates when manuscripts were received
-date_r <- function(art) {
+date_r <- function(pubmed_article_element) {
 
-  articles <- xml_find_all(art, "//PubmedArticle")
+  date_element <- xml_find_first(pubmed_article_element, ".//PubMedPubDate[@PubStatus='received']") 
   
-  res_dates <- c()
-  
-  for (i in 1:length(articles)) {
-    article <- articles[[i]]
-    pm_id <- xml_text(xml_find_first(article, ".//PMID"))
-    
-    pub_dates <- xml_find_all(article, ".//PubMedPubDate[@PubStatus='received']") 
-    
-    if (length(pub_dates) == 0){
-      res_dates <- c(res_dates, glue("N/A"))
-      next
-    }
-    
-    for (j in 1:length(pub_dates)) {
-      pub_date <- pub_dates[[j]]
-      res_dates <- c(res_dates, build_date(pub_date))
-    }
+  if (is.na(date_element)) {
+    return("N/A")
   }
-  return(res_dates)
+  return(build_date(date_element))
 }
-
 
 # Get dates when manuscripts were accepted
-date_acc <- function(art) {
-  articles <- xml_find_all(art, "//PubmedArticle")
+date_acc <- function(pubmed_article_element) {
+  date_element <- xml_find_first(pubmed_article_element, ".//PubMedPubDate[@PubStatus='accepted']")
   
-  accept_dates <- c()
-  
-  for (i in 1:length(articles)) {
-    article <- articles[[i]]
-    pm_id <- xml_text(xml_find_first(article, ".//PMID"))
-    
-    pub_dates <- xml_find_all(article, ".//PubMedPubDate[@PubStatus='accepted']") 
-    
-    if (length(pub_dates) == 0){
-      accept_dates <- c(accept_dates, glue("N/A"))
-      next
-    }
-    
-    for (j in 1:length(pub_dates)) {
-      pub_date <- pub_dates[[j]]
-      accept_dates <- c(accept_dates, build_date(pub_date))
-    }
+  if (is.na(date_element)) {
+    return("N/A")
   }
-  return(accept_dates)
+  
+  return(build_date(date_element))
 }
-

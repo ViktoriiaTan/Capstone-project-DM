@@ -1,41 +1,95 @@
-# source the dependent functions from other files
-#setwd("...")
+getwd()
+setwd("/Users/viktoriiatantsiura/Downloads/University_Luzern/Data_Mining/Capstone-project-DM/script")
 source("pubmed_funcs.R")
 source("abstracts.R")
 source("items.R")
 source("get_dates.R")
 source("get_titles.R")
 source("outlink.R")
+# Set the HTTP version to 1.1 (none, 1.0, 1.1, 2)
+httr::set_config(config(http_version = 2)) 
 
-get_content <- function(db = "pubmed", query, retmax = 20) {
+# Function to process a PubMed article element
+process_pubmed_article <- function(pubmed_article_element) {
   
-  # Retrieve PubMed article IDs
-  art_ids <- pubmed_ids(db = db, query = query, retmax = retmax)
-  print (art_ids)
-  # Retrieve PubMed article content
-  articles <- pubmed_content(ids = art_ids, db = db, retmode = "xml", rettype = "abstract")
-  article_title <- title(articles)
-  journal_title <- journal_t(articles)
-  
-  abstract <- abstract_function(articles)
-  
-  pub_received <- date_r(articles)
-  pub_accepted <- date_acc(articles)
-  print(pub_received )
-  print(pub_accepted )
-  country <- get_country(articles)
-  
-  authors <- get_authors(articles)
-  
-  linkout <- pubmed_linkout(db, art_ids)
-  
-  doi <- doi_results(articles)
+  # Extract various information about the article
+  article_id <- get_pmid(pubmed_article_element)
+  article_title <- get_pubmed_article_title(pubmed_article_element)
+  journal_title <- get_pubmed_article_journal(pubmed_article_element)
+  abstract <- get_pubmed_article_abstract(pubmed_article_element)
+  conclusions <- get_pubmed_article_conclusions(pubmed_article_element)
+  results <- get_pubmed_article_results(pubmed_article_element)
+  pub_received <- date_r(pubmed_article_element)
+  pub_accepted <- date_acc(pubmed_article_element)
+  country <- get_country(pubmed_article_element)
+  authors <- get_authors(pubmed_article_element)
+  doi <- doi_results(pubmed_article_element)
   
   # Create data frame with results
-  df <- tibble("PMID" = art_ids, "Title" = article_title, "Abstract" = abstract, 
-                   "Journal" = journal_title, "Country" = country, "Outlink" = linkout,
-                   "Article received" = pub_received, "Article accepted"= pub_accepted, "DOI"= doi)
+  df <- tibble(
+    "PMID" = article_id,
+    "Title" = article_title,
+    "Abstract" = abstract, 
+    "Conclusions" = conclusions,
+    "Results" = results,
+    "Journal" = journal_title,
+    "Authors" = authors,
+    "Country" = country,
+    "Article received" = pub_received,
+    "Article accepted"= pub_accepted,
+    "DOI"= doi
+  )
   
   return(df)
 }
-b<- get_content(db,query, 2500)
+
+# Retrieve content from the PubMed database
+get_content <- function(db = "pubmed", query, max_rows) {
+  
+  page_size <- 50
+  item_index <- 0
+  
+  df <- data.frame()
+  
+  repeat {
+    
+    # Retrieve PubMed article IDs
+    article_ids <- find_pubmed_ids(db = db, query = query, retmax = page_size, retstart = item_index)
+    retcount <- length(article_ids)
+    
+    # Retrieve PubMed article content
+    pubmed_article_set <- fetch_pubmed_content(db = db, ids = article_ids, retmode = "xml", rettype = "abstract")
+    
+    # Retrieve PubMed links out
+    outlinks_xml <- fetch_pubmed_outlinks(db = db, ids = article_ids)
+    
+    # Process PubMed articles content
+    articles_df <- process_pubmed_articles(pubmed_article_set)
+    
+    # Process PubMed links out
+    outlinks_df <- process_pubmed_outlinks(outlinks_xml)
+    
+    merged_df <- merge(articles_df, outlinks_df, by = "PMID", sort = FALSE)
+    
+    df <- rbind(df, merged_df)
+    total_rows <- nrow(df)
+    
+    if (total_rows >= max_rows) {
+      print(glue("Processed articles: {max_rows}"))
+      return(df[1:max_rows,])
+    }
+    else {
+      print(glue("Processed articles: {total_rows}"))
+    }
+    
+    if (retcount < page_size) {
+      break
+    }
+    
+    item_index <- item_index + retcount
+  }
+  
+  return(df)
+}
+
+get_content<- get_content(db, query, 1400) 

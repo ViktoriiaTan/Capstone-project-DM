@@ -1,52 +1,22 @@
-#Get an article title
 
-title <- function(art){
-  all_art <- xml_find_all(art, "//PubmedArticle")
-  num_docs <- length(all_art)
+get_xml_text_or_default <- function(xml_element, default) {
   
-  titles <- lapply(all_art, function(pubmed_article){
-    article_node <- xml_find_first(pubmed_article, ".//Article")
-    
-    if (is.null(article_node)) {
-      return("NA")
-    } else {
-      title <- xml_find_first(article_node, ".//ArticleTitle")
-      
-      if (is.null(title)) {
-        return("NA")
-      } else {
-        return(xml_text(title, trim = TRUE))
-      }
-    }
-  })
-  
-  return(titles)
+  if (is.na(xml_element)) {
+    return(default)
+  } else {
+    return(xml_text(xml_element, trim = TRUE))
+  }
 }
 
-
+#Get an article title
+get_pubmed_article_title <- function(pubmed_article_element){
+  title_element <- xml_find_first(pubmed_article_element, ".//Article/ArticleTitle")
+  return(get_xml_text_or_default(title_element, "N/A"))
+}
 
 #Get journal title in which an article was published
-
-journal_t <- function(art){
-  all_art <- xml_find_all(art, "//PubmedArticle")
-  num_docs <- length(all_art)
-  
-  j_titles <- lapply(all_art, function(pubmed_article){
-    journal_node <- xml_find_first(pubmed_article, ".//Journal")
-    
-    if (is.null(journal_node)) {
-      return("NA")
-    } else {
-      title <- xml_find_first(journal_node, ".//Title")
-      
-      if (is.null(title)) {
-        return("NA")
-      } else {
-        return(xml_text(title, trim = TRUE))
-      }
-    }
-  })
-  
-  return(j_titles)
+get_pubmed_article_journal <- function(pubmed_article_element){
+  title_element <- xml_find_first(pubmed_article_element, "//PubmedArticle")
+  return(get_xml_text_or_default(title_element, "N/A"))
 }
 

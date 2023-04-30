@@ -27,14 +27,18 @@ remotes::install_url("https://github.com/ViktoriiaTan/Capstone-project-DM/releas
  search_results <- search_pubmed(db = "pubmed", query = "cancer AND 2020", max_rows = 100)
  
  IMPORTANT:
- db = "pubmed" should be always specified;
- queries can be combined with OR or NOT in addition to AND
+ * db = "pubmed" should be always specified;
+ 
+ * queries can be combined with OR or NOT in addition to AND
  and have such format "cancer AND 2020 OR 2021";
- max_row are limited to 10000 by PUBMED system;
- if you have 
+ 
+ * max_row are limited to 10000 by PUBMED system;
+ 
+ * if you have 
  Error in curl::curl_fetch_memory(url, handle = handle) : 
   Error in the HTTP2 framing layer
-  ---> Set the HTTP version to 1.1
+  
+  * ---> Set the HTTP version to 1.1
   library(http)
   httr::set_config(config(http_version = 2)) 
  

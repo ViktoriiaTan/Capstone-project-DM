@@ -16,7 +16,7 @@ library(remotes)
 3.Install the pubmedart package from the release URL:
 remotes::install_url("https://github.com/ViktoriiaTan/Capstone-project-DM/releases/download/v0.0.0.9000/pubmedart_0.0.0.9000.tar.gz")
 
-### Usage
+## Usage
  To use the pubmedart package, first load it in your R session:
  library(pubmedart)
 
@@ -26,7 +26,7 @@ remotes::install_url("https://github.com/ViktoriiaTan/Capstone-project-DM/releas
  Search for articles related to a specific topic
  search_results <- search_pubmed(db = "pubmed", query = "cancer AND 2020", max_rows = 100)
  
- IMPORTANT:
+## IMPORTANT:
  * db = "pubmed" should be always specified;
  
  * queries can be combined with OR or NOT in addition to AND
@@ -38,14 +38,16 @@ remotes::install_url("https://github.com/ViktoriiaTan/Capstone-project-DM/releas
  Error in curl::curl_fetch_memory(url, handle = handle) : 
   Error in the HTTP2 framing layer
   
-  * ---> Set the HTTP version to 1.1
+  ---> Set the HTTP version to 1.1
+  
   library(http)
+  
   httr::set_config(config(http_version = 2)) 
  
-####Documentation
+## Documentation
 The functions in the pubmedart package are documented using Roxygen2.
 
-#####License
+## License
 This package is released under the Unlicense. For more information, please refer to the LICENSE file.
  
  

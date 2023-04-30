@@ -24,7 +24,7 @@ get_key_opt <- function() {
 find_pubmed_ids <- function(db = "pubmed", query, retmax, retstart){
   api_key <- get_key_opt()
   query <- gsub(" ", "+", query)
-  search_url <- glue("{PUBMED_BASE_ADDRESS}esearch.fcgi?db={db}&term={query}&usehistory=y&retmax={retmax}&api_key={api_key}")
+  search_url <- glue("{PUBMED_BASE_ADDRESS}esearch.fcgi?db={db}&term={query}&usehistory=y&retmax={retmax}&retstart={retstart}&api_key={api_key}")
   ids <- httr::GET(search_url) %>% 
     content("text") %>% 
     read_xml() %>% 

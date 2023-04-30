@@ -1,6 +1,6 @@
 #Retrieving OutLink
 fetch_pubmed_outlinks <- function(db, ids) {
-  
+  query <- gsub(" ", "+", query)
   ids_str <- paste(ids, collapse = ",")
   link <- glue("{PUBMED_BASE_ADDRESS}elink.fcgi?dbfrom={db}&id={ids_str}&cmd=prlinks&api_key={api_key}")
   

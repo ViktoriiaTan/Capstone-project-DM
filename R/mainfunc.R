@@ -1,47 +1,13 @@
-getwd()
-setwd("/Users/viktoriiatantsiura/Downloads/University_Luzern/Data_Mining/Capstone-project-DM/script")
 source("pubmed_funcs.R")
 source("abstracts.R")
 source("items.R")
 source("get_dates.R")
 source("get_titles.R")
 source("outlink.R")
+
+
 # Set the HTTP version to 1.1 (none, 1.0, 1.1, 2)
 httr::set_config(config(http_version = 2)) 
-
-# Function to process a PubMed article element
-process_pubmed_article <- function(pubmed_article_element) {
-  
-  # Extract various information about the article
-  article_id <- get_pmid(pubmed_article_element)
-  article_title <- get_pubmed_article_title(pubmed_article_element)
-  journal_title <- get_pubmed_article_journal(pubmed_article_element)
-  abstract <- get_pubmed_article_abstract(pubmed_article_element)
-  conclusions <- get_pubmed_article_conclusions(pubmed_article_element)
-  results <- get_pubmed_article_results(pubmed_article_element)
-  pub_received <- date_r(pubmed_article_element)
-  pub_accepted <- date_acc(pubmed_article_element)
-  country <- get_country(pubmed_article_element)
-  authors <- get_authors(pubmed_article_element)
-  doi <- doi_results(pubmed_article_element)
-  
-  # Create data frame with results
-  df <- tibble(
-    "PMID" = article_id,
-    "Title" = article_title,
-    "Abstract" = abstract, 
-    "Conclusions" = conclusions,
-    "Results" = results,
-    "Journal" = journal_title,
-    "Authors" = authors,
-    "Country" = country,
-    "Article received" = pub_received,
-    "Article accepted"= pub_accepted,
-    "DOI"= doi
-  )
-  
-  return(df)
-}
 
 # Retrieve content from the PubMed database
 get_content <- function(db = "pubmed", query, max_rows) {
@@ -50,7 +16,6 @@ get_content <- function(db = "pubmed", query, max_rows) {
   item_index <- 0
   
   df <- data.frame()
-  
   repeat {
     
     # Retrieve PubMed article IDs
@@ -64,7 +29,7 @@ get_content <- function(db = "pubmed", query, max_rows) {
     outlinks_xml <- fetch_pubmed_outlinks(db = db, ids = article_ids)
     
     # Process PubMed articles content
-    articles_df <- process_pubmed_articles(pubmed_article_set)
+    articles_df <- process_pubmed_articleset(pubmed_article_set)
     
     # Process PubMed links out
     outlinks_df <- process_pubmed_outlinks(outlinks_xml)

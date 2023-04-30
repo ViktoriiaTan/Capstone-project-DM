@@ -17,11 +17,11 @@
 #' @examples
 #' \dontrun{
 #' # Retrieve content from PubMed articles related to "cancer" (max 100 articles)
-#' cancer_articles <- get_content(db = "pubmed", query = "cancer", max_rows = 100)
+#' cancer_articles <- search_pubmed(db = "pubmed", query = "cancer", max_rows = 100)
 #' }
 #'
 #' @export
-get_content <- function(db = "pubmed", query, max_rows) {
+search_pubmed <- function(db = "pubmed", query, max_rows) {
   
   api_key <- get_key_opt()
   

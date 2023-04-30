@@ -1,4 +1,17 @@
-# Define a function to build a date string
+#' Build Date Strings and Retrieve Manuscript Dates
+#'
+#' These internal functions build date strings and retrieve manuscript dates (received and accepted) from PubMed articles.
+#' They are used to process the XML elements returned by the PubMed API.
+#'
+#' @param date_node An XML node representing a date element.
+#' @param pubmed_article_element An XML element representing a PubMed article.
+#'
+#' @return A character string containing the formatted date or "N/A" if not available.
+#'
+#' @import glue
+#' @import xml2
+#' 
+#' @keywords internal
 build_date <- function(date_node) {
   year <- xml_text(xml_find_first(date_node, ".//Year"))
   month <- xml_text(xml_find_first(date_node, ".//Month"))
@@ -6,7 +19,13 @@ build_date <- function(date_node) {
   return (glue("{year}-{month}-{day}"))
 }
 
-# Get dates when manuscripts were received
+#' Date Received
+#'
+#' This function extracts the received date from a PubMed article element.
+#'
+#' @param pubmed_article_element An XML node containing a PubMed article element.
+#' @return A character string representing the received date or "N/A" if not found.
+#' @rdname date
 date_r <- function(pubmed_article_element) {
 
   date_element <- xml_find_first(pubmed_article_element, ".//PubMedPubDate[@PubStatus='received']") 
@@ -17,7 +36,13 @@ date_r <- function(pubmed_article_element) {
   return(build_date(date_element))
 }
 
-# Get dates when manuscripts were accepted
+#' Date Accepted
+#'
+#' This function extracts the accepted date from a PubMed article element.
+#'
+#' @param pubmed_article_element An XML node containing a PubMed article element.
+#' @return A character string representing the accepted date or "N/A" if not found.
+#' @rdname date
 date_acc <- function(pubmed_article_element) {
   date_element <- xml_find_first(pubmed_article_element, ".//PubMedPubDate[@PubStatus='accepted']")
   

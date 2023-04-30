@@ -6,7 +6,7 @@
 #' This function retrieves content from the PubMed database based on a given search query and
 #' the maximum number of rows to be returned.
 #'
-#' @param db A character string specifying the database to search in.
+#' @param db A character string specifying the database to search in. Default is "pubmed".
 #' @param query A character string specifying the search query for finding articles.
 #' @param max_rows An integer specifying the maximum number of articles to return.
 #'
@@ -21,7 +21,7 @@
 #' }
 #'
 #' @export
-search_pubmed <- function(db, query, max_rows) {
+search_pubmed <- function(db = "pubmed", query, max_rows) {
   
   api_key <- get_key_opt()
   

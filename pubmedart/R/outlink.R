@@ -41,7 +41,7 @@ fetch_pubmed_outlinks <- function(db, ids) {
 process_pubmed_outlinks <- function(xml_doc) {
   
   create_row <- function(id, url) {
-    return(tibble(
+    return(data.frame(
       "PMID" = id,
       "Outlink" = url
     ))

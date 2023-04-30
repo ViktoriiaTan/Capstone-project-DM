@@ -4,10 +4,10 @@
 \alias{search_pubmed}
 \title{Retrieve Content from the PubMed Database}
 \usage{
-search_pubmed(db, query, max_rows)
+search_pubmed(db = "pubmed", query, max_rows)
 }
 \arguments{
-\item{db}{A character string specifying the database to search in.}
+\item{db}{A character string specifying the database to search in. Default is "pubmed".}
 
 \item{query}{A character string specifying the search query for finding articles.}
 

@@ -1,0 +1,17 @@
+Package: pubmedart
+Title: Access to Pubmed articles
+Version: 0.0.0.9000
+Authors@R: 
+    person("Viktoriia", "Tantsiura", , "viktantsiura@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-8628-6588"))
+Description: The pubmedart package is designed to simplify the process of searching and retrieving articles from the PubMed database. By providing an intuitive interface and R wrapper function, the package allows users to quickly obtain relevant article information in a formatted data frame.
+License: file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: httr, glue, xml2, tidyverse, dplyr
+NeedsCompilation: no
+Packaged: 2023-04-30 16:15:44 UTC; viktoriiatantsiura
+Author: Viktoriia Tantsiura [aut, cre]
+    (<https://orcid.org/0000-0001-8628-6588>)
+Maintainer: Viktoriia Tantsiura <viktantsiura@gmail.com>

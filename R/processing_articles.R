@@ -1,7 +1,19 @@
-# Function to process a set of PubMed articles
+#' Process a Set of PubMed Articles
+#'
+#' This internal function processes a set of PubMed articles and extracts relevant information from the XML elements.
+#'
+#' @param pubmed_article_set An XML document containing a set of PubMed articles.
+#'
+#' @return A data frame containing information about the processed PubMed articles.
+#'
+#' @import dplyr
+#' @import xml2
+#' @import tidyverse
+#'
+#' @keywords internal
 process_pubmed_articleset <- function(pubmed_article_set) {
   
-  df <- data.frame()
+  df <- tibble()
   
   pubmed_article_elements <- xml_find_all(pubmed_article_set, "//PubmedArticle")
   
@@ -14,7 +26,19 @@ process_pubmed_articleset <- function(pubmed_article_set) {
   
   return(df)
 }
-# Function to process a PubMed article element
+
+#' Process a PubMed Article Element
+#'
+#' This internal function processes a PubMed article element and extracts relevant information.
+#'
+#' @param pubmed_article_element An XML element representing a PubMed article.
+#'
+#' @return A data frame containing information about the processed PubMed article.
+#'
+#' @import dplyr
+#' @import xml2
+#'
+#' @keywords internal
 process_pubmed_article <- function(pubmed_article_element) {
   
   # Extract various information about the article
